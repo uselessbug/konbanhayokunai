@@ -67,10 +67,11 @@ def signin(first_access_token: str, id: str, lon: float, la: float):
 
 if __name__ == '__main__':
     with open('app-user.json', encoding='utf-8') as f:
-        u = json.load(f)
-    at = login(u[0]["xgh"], u[0]["password"])['data']['access_token']
-    fat = requests.utils.dict_from_cookiejar(get_cookies(at))['first_access_token']
-    for i in get_list(fat, "history")['data']:
-        t = datetime.datetime.now().strftime('%Y-%m-%d')
-        m = signin(fat, i['id'], u[0]["longitude"], u[0]["latitude"])['msg']
-        print(t, "id: " + i['id'], m)
+        users = json.load(f)
+    for u in users:
+        at = login(u["xgh"], u["password"])['data']['access_token']
+        fat = requests.utils.dict_from_cookiejar(get_cookies(at))['first_access_token']
+        for i in get_list(fat, "today")['data']:
+            t = datetime.datetime.now().strftime('%Y-%m-%d')
+            m = signin(fat, i['id'], u["longitude"], u["latitude"])['msg']
+            print(t, "id: " + i['id'], m)
