@@ -73,5 +73,6 @@ if __name__ == '__main__':
         fat = requests.utils.dict_from_cookiejar(get_cookies(at))['first_access_token']
         for i in get_list(fat, "today")['data']:
             t = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-            m = signin(fat, i['id'], u["longitude"], u["latitude"])['msg']
-            print(t, "xgh: " + u["xgh"], "id: " + i['id'], m)
+            if i["status"] is None:
+                m = signin(fat, i["id"], u["longitude"], u["latitude"])["msg"]
+                print(t, "xgh: " + u["xgh"], "id: " + i["id"], m)
