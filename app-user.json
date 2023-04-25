@@ -2,7 +2,21 @@
   {
     "xgh": "xgh",
     "password": "password",
-    "longitude": 120,
-    "latitude": 30
+    "address": "address",
+    "info": {
+		"addressComponents": {
+			"country": "country",
+			"province": "province",
+			"city": "city",
+			"district": "district",
+			"street": "street",
+			"streetNumber": "",
+			"town": "town",
+			"village": ""
+		},
+		"latitude": 1.000000,
+		"longitude": 1.000000,
+		"isvalid": true
+	}
   }
 ]
