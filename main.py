@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+import sys
 
+import pytz
 import requests
 
 ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;zfsoft'
@@ -73,14 +75,26 @@ if __name__ == '__main__':
         at = login(u['xgh'], u['password'])['data']['access_token']
         fat = requests.utils.dict_from_cookiejar(getCookies(at))['first_access_token']
         us = getUserScheduling(fat)
-        if us['data']['lasterrow'] is None:
-            i = us['data']['scheduling']['id']
-            uci = userCheckIn(fat, i, u['address'], u['info'])
-            t = uci['data']['sign_at']
-            m = uci['msg']
-            print(t, 'xgh: ' + u['xgh'], 'id: ' + i, m)
+        i = us['data']['scheduling']['id']
+        st = us['data']['scheduling']['start_time']
+        et = us['data']['scheduling']['end_time']
+        today = datetime.datetime.now(pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d')
+        st = datetime.datetime.strptime(f'{today} {st}', '%Y-%m-%d %H:%M:%S').replace(
+            tzinfo=pytz.timezone('Asia/Shanghai'))
+        et = datetime.datetime.strptime(f'{today} {et}', '%Y-%m-%d %H:%M:%S').replace(
+            tzinfo=pytz.timezone('Asia/Shanghai'))
+        n = datetime.datetime.now(pytz.timezone('Asia/Shanghai'))
+        if st < n < et or '-force' in sys.argv:
+            if us['data']['lasterrow'] is None:
+                uci = userCheckIn(fat, i, u['address'], u['info'])
+                t = uci['data']['sign_at']
+                m = uci['msg']
+                print(t, 'xgh: ' + u['xgh'], 'id: ' + i, m)
+            else:
+                t = datetime.datetime.strptime(us['data']['lasterrow']['sign_at'], '%Y-%m-%d %H:%M:%S').strftime(
+                    '%H:%M:%S')
+                n = n.strftime('%Y-%m-%d %H:%M:%S')
+                print(n, 'xgh: ' + u['xgh'], 'id: ' + i, f'{t}に手動でチェックインしました')
         else:
-            i = us['data']['scheduling']['id']
-            t = us['data']['lasterrow']['sign_at']
-            n = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print(n, 'xgh: ' + u['xgh'], 'id: ' + i, f'{t}に手動でチェックインしました')
+            n = n.strftime('%Y-%m-%d %H:%M:%S')
+            print(n, 'xgh: ' + u['xgh'], 'id: ' + i, 'チェックインすべき時間の範囲外です。「-force」パラメータで強制チェックインをします（リスクある）')
