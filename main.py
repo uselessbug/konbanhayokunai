@@ -85,7 +85,7 @@ if __name__ == '__main__':
             tzinfo=pytz.timezone('Asia/Shanghai'))
         n = datetime.datetime.now(pytz.timezone('Asia/Shanghai'))
         if st < n < et or '-force' in sys.argv:
-            if us['data']['lasterrow'] is None:
+            if us['data']['lasterrow'] is None or '-force' in sys.argv:
                 uci = userCheckIn(fat, i, u['address'], u['info'])
                 t = uci['data']['sign_at']
                 m = uci['msg']
@@ -94,7 +94,7 @@ if __name__ == '__main__':
                 t = datetime.datetime.strptime(us['data']['lasterrow']['sign_at'], '%Y-%m-%d %H:%M:%S').strftime(
                     '%H:%M:%S')
                 n = n.strftime('%Y-%m-%d %H:%M:%S')
-                print(n, 'xgh: ' + u['xgh'], 'id: ' + i, f'{t}に手動でチェックインしました')
+                print(n, 'xgh: ' + u['xgh'], 'id: ' + i, f'{t}に手動でチェックインしました。「-force」パラメータで強制チェックインをします（リスクある）')
         else:
             n = n.strftime('%Y-%m-%d %H:%M:%S')
             print(n, 'xgh: ' + u['xgh'], 'id: ' + i, 'チェックインすべき時間の範囲外です。「-force」パラメータで強制チェックインをします（リスクある）')
